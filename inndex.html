@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>JSONBin.io'ya Metin Ekleme</title>
+</head>
+<body>
+    <h1>JSONBin.io'ya Metin Ekleme</h1>
+    <form id="textForm">
+        <label for="textInput">Metin:</label>
+        <input type="text" id="textInput" name="textInput" required>
+        <button type="submit">Gönder</button>
+    </form>
+
+    <script>
+        document.getElementById('textForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const text = document.getElementById('textInput').value;
+
+            // Mevcut bin'i al
+            fetch('https://api.jsonbin.io/v3/b/66d1b71aacd3cb34a87bc649/latest', {
+                method: 'GET',
+                headers: {
+                    'X-Master-Key': '$2a$10$d3o3VAfw45VawULn4vao6.cEZzvTM87JUcqTIzqKjwLUguG1bZTLO'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Mevcut veriyi güncelle
+                const updatedData = data.record;
+                updatedData.students.push({ text: text });
+
+                // Güncellenmiş veriyi bin'e gönder
+                return fetch('https://api.jsonbin.io/v3/b/66d1b71aacd3cb34a87bc649', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': '$2a$10$d3o3VAfw45VawULn4vao6.cEZzvTM87JUcqTIzqKjwLUguG1bZTLO'
+                    },
+                    body: JSON.stringify(updatedData)
+                });
+            })
+            .then(response => response.json())
+            .then(json => {
+                console.log('Başarılı:', json);
+                alert('Metin başarıyla eklendi!');
+            })
+            .catch(error => {
+                console.error('Hata:', error);
+                alert('Metin eklenirken bir hata oluştu.');
+            });
+        });
+    </script>
+</body>
+</html>
